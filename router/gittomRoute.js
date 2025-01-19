@@ -1,7 +1,8 @@
 const express = require("express");
-const { postGittomEmail } = require("../controllers/gittom");
+const { postGittomEmail, checkEmailAndCode } = require("../controllers/gittom");
 const router = express.Router();
 
 router.post("/", postGittomEmail);
+router.post("/check", checkEmailAndCode);
 
 module.exports = router;

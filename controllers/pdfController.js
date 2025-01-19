@@ -8,7 +8,7 @@ exports.uploadPDF = async (req, res) => {
     const filePath = req.file;
     let url = "";
     if (filePath) {
-      url = `http://cloudinary.allbusinesssolution.com/public/uploads/${filePath.filename}`;
+      url = `https://cloudinary.allbusinesssolution.com/public/uploads/${filePath.filename}`;
     }
 
     // Insert file into the database
@@ -34,6 +34,44 @@ exports.uploadPDF = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       message: "Error uploading PDF",
+      error: error.message,
+    });
+  }
+};
+
+// upload files
+exports.uploadFiles = async (req, res) => {
+  try {
+    const { name } = req.body;
+
+    const urls = [];
+    for (const file of req.files) {
+      const url = `https://cloudinary.allbusinesssolution.com/public/uploads/${file.filename}`;
+      urls.push(url);
+
+      // Insert each file into the database
+      const [result] = await db.query(
+        "INSERT INTO files (name, url) VALUES (?, ?)",
+        [name || "", url]
+      );
+
+      // Check if the insertion was successful for each file
+      if (result.affectedRows === 0) {
+        return res.status(500).send({
+          success: false,
+          message: `Failed to insert file: ${file.originalname}`,
+        });
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Files uploaded successfully",
+      urls: urls,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error uploading Files",
       error: error.message,
     });
   }

@@ -25,6 +25,7 @@ app.use("/public", express.static(path.join(__dirname, "public")));
 
 // Routes
 app.use("/api/v1/files", require("./router/pdfRouter"));
+app.use("/api/v1/gittiom", require("./router/gittomRoute"));
 
 mySqlPool
   .query("SELECT 1")
